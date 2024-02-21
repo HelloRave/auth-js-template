@@ -16,6 +16,7 @@ export const {
   trustHost: true,
   ...authConfig,
   providers: [
+    ...authConfig.providers,
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -32,20 +33,24 @@ export const {
       },
       async authorize(credentials) {
         try {
+          const { email, password } = credentials;
+
           const foundUser = await prisma.user.findUnique({
             where: {
-              email: credentials?.email as string,
+              email: email as string,
             },
           });
+
+          if (!foundUser?.password) {
+            return null;
+          }
+
           if (foundUser) {
-            console.log("User exist");
             const passwordMatch = await bcrypt.compare(
-              credentials?.password as string,
-              foundUser.password!
+              password as string, foundUser.password
             );
 
             if (passwordMatch) {
-              console.log("Good match");
               return {
                 id: foundUser.id,
                 name: foundUser.name,
@@ -61,4 +66,26 @@ export const {
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) token.role = user.role
+      console.log({ token });
+      return token;
+    },
+    async session({ session, user, token }) {
+      if (token.sub && session.user) {
+        session.user.id = token.sub;
+      }
+
+      if (token.role && session.user) {
+        session.user.role = token.role;
+      }
+
+      console.log({
+        sessionToken: token,
+        session
+      })
+      return session;
+    },
+  },
 });

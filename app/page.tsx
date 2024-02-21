@@ -1,4 +1,4 @@
-import { signIn } from "@/auth";
+import { signIn, signOut } from "@/auth";
 
 export default function Home() {
   return (
@@ -15,10 +15,18 @@ export default function Home() {
       <form
         action={async () => {
           'use server';
-          await signIn('credentials');
+          await signIn();
         }}
       >
         <button>Credentials</button>
+      </form>
+      <form
+        action={async () => {
+          'use server';
+          await signOut();
+        }}
+      >
+        <button>Sign out</button>
       </form>
     </div>
   );
