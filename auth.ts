@@ -67,8 +67,9 @@ export const {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) token.role = user.role
+    async jwt({ token }) {
+      if (!token.sub) return token;
+      token.role = 'getUserById(token.sub)'
       console.log({ token });
       return token;
     },
