@@ -7,17 +7,7 @@ export const authConfig = {
     signIn: '/auth/login',
   },
   providers: [
-    GoogleProvider({
-      profile(profile) {
-        console.log(profile);
-        return profile;
-      },
-    }),
-    GitHubProvider({
-      profile(profile) {
-        console.log(profile);
-        return {};
-      },
-    }),
+    GoogleProvider,
+    GitHubProvider,
   ],
 } satisfies NextAuthConfig;

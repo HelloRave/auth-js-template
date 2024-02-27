@@ -66,6 +66,11 @@ export const {
       },
     }),
   ],
+  events: {
+    async linkAccount({ user }) {
+      // if login/register with OAuth => update email verified to true
+    }
+  },
   callbacks: {
     async jwt({ token }) {
       if (!token.sub) return token;
