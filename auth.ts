@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 import { authConfig } from "./auth.config";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./lib/prisma";
+import { getUserById } from "./lib/dbQuery";
+import moment from "moment";
 
 export const {
   handlers: { GET, POST },
@@ -68,13 +70,23 @@ export const {
   ],
   events: {
     async linkAccount({ user }) {
-      // if login/register with OAuth => update email verified to true
+      // triggered when an account in a given provider is linked to a user in our user database
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { emailVerified: moment().toDate() },
+      });
     }
   },
   callbacks: {
     async jwt({ token }) {
       if (!token.sub) return token;
-      token.role = 'getUserById(token.sub)'
+
+      const userExist = await getUserById(token.sub);
+
+      if (!userExist) return token;
+
+      token.role = userExist.role;
+
       console.log({ token });
       return token;
     },
