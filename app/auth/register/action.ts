@@ -3,6 +3,7 @@
 import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
 import { TSignupSchema, signUpSchema } from "@/lib/schema";
+import { generateVerificationToken } from "@/lib/util";
 
 export async function registerUser(data: TSignupSchema) {
     const result = signUpSchema.safeParse(data);
@@ -30,7 +31,10 @@ export async function registerUser(data: TSignupSchema) {
                 password: hashedPassword,
             }
         });
-        return { success: true, message: "User created" };
+
+        const verificationToken = await generateVerificationToken(data.email);
+
+        return { success: true, message: 'Confirmation email sent' };
     } catch (error) {
         console.log(error)
         return { sucess: false };

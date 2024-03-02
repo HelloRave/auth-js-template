@@ -15,6 +15,14 @@ export default function Home() {
       <form
         action={async () => {
           'use server';
+          await signIn('github');
+        }}
+      >
+        <button>Github</button>
+      </form>
+      <form
+        action={async () => {
+          'use server';
           await signIn();
         }}
       >

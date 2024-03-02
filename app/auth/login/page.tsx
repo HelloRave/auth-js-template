@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import InputGroup from "../../components/InputGroup";
 import { TLoginSchema, authenticate } from "./action";
 import { useFormState } from "react-dom";
+import { useSearchParams } from "next/navigation";
 
 export default function LoginHookForm() {
     const {
@@ -23,6 +24,9 @@ export default function LoginHookForm() {
     }
 
     const [errorMessage, dispatch] = useFormState(authenticate, undefined);
+
+    const searchParams = useSearchParams();
+    const urlError = searchParams.get("error") === "OAuthAccountNotLinked" ? "Email in used with different provider!" : "";
 
     return (
         <div className="min-h-full flex justify-center my-10">
@@ -63,6 +67,9 @@ export default function LoginHookForm() {
                     </form>
                     {
                         errorMessage && <p>{errorMessage}</p>
+                    }
+                    {
+                        urlError && <p>{urlError}</p>
                     }
                     <div className="flex flex-col gap-3 items-center mt-5">
                         <button>
