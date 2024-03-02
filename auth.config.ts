@@ -5,6 +5,7 @@ import GitHubProvider from "next-auth/providers/github";
 export const authConfig = {
   pages: {
     signIn: '/auth/login',
+    error: '/auth/error',
   },
   providers: [
     GoogleProvider,
