@@ -2,6 +2,7 @@
 
 import { signIn } from "@/auth";
 import { getUserByEmail } from "@/lib/dbQuery";
+import { Email } from "@/lib/mail";
 import { generateVerificationToken } from "@/lib/util";
 import { AuthError } from "next-auth";
 
@@ -20,9 +21,17 @@ export async function authenticate(
     const existingUser = await getUserByEmail((email as string));
 
     if (!existingUser?.emailVerified) {
-        const verificationToken = await generateVerificationToken((email as string));
+        const { token } = await generateVerificationToken((email as string));
+        const verificationUrl = `http://localhost:3000/auth/new-verification?token=${token}`;
+        const verificationEmail = new Email((email as string), verificationUrl);
+        
+        try {
+            await verificationEmail.sendVerfication();
+            return 'Confirmation email sent';
+        } catch (error) {
+            return "Something went wrong";
+        }
 
-        // return 'Confirmation email sent';
     }
 
     try {
