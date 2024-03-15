@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import InputGroup from "../../components/InputGroup";
 import { TLoginSchema, authenticate } from "./action";
-import { useFormState } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
 import { useSearchParams } from "next/navigation";
 
 export default function LoginHookForm() {
@@ -23,7 +23,9 @@ export default function LoginHookForm() {
         errors: errors,
     }
 
+    // TODO: Merging errorMessage and urlError; pending vs isSubmitting
     const [errorMessage, dispatch] = useFormState(authenticate, undefined);
+    const { pending } = useFormStatus();
 
     const searchParams = useSearchParams();
     const urlError = searchParams.get("error") === "OAuthAccountNotLinked" ? "Email in used with different provider!" : "";
@@ -56,13 +58,13 @@ export default function LoginHookForm() {
                             />
                         </div>
                         <button
-                            disabled={!isValid || isSubmitting}
+                            disabled={!isValid || pending}
                             type="submit"
                             className="bg-indigo-600 mt-5 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm
                                         disabled:bg-slate-300
                                         hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 rounded"
                         >
-                            Submit
+                            {pending ? "Submitting..." : "Submit"}
                         </button>
                     </form>
                     {

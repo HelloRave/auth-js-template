@@ -11,6 +11,7 @@ export type TLoginSchema = {
     password: string;
 };
 
+// TODO: Format return of authenticate
 export async function authenticate(
     prevState: string | undefined,
     formData: FormData
